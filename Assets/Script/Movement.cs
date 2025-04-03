@@ -5,21 +5,21 @@ using UnityEngine;
 public class Movement : MonoBehaviour
 {
     Rigidbody rig;
-
     public float speed = 4;
-
     Vector3 LookPos;
-    // Start is called before the first frame update
+
+    public GameObject bulletPrefab; // Prefab de la bala
+    public Transform firePoint; // Punto de origen del disparo
+    public float bulletSpeed = 10f;
+
     void Start()
     {
         rig = GetComponent<Rigidbody>();
-        
     }
 
-    private void Update()
+    void Update()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit, 100))
@@ -30,10 +30,18 @@ public class Movement : MonoBehaviour
         Vector3 LookDir = LookPos - transform.position;
         LookDir.y = 0;
 
-        transform.LookAt(transform.position + LookDir, Vector3.up);
+        if (LookDir != Vector3.zero)
+        {
+            transform.LookAt(transform.position + LookDir, Vector3.up);
+        }
+
+        // Disparar con click izquierdo
+        if (Input.GetMouseButtonDown(0))
+        {
+            Shoot();
+        }
     }
 
-    // Update is called once per frame
     void FixedUpdate()
     {
         float horizontal = Input.GetAxis("Horizontal");
@@ -41,6 +49,18 @@ public class Movement : MonoBehaviour
 
         Vector3 movement = new Vector3(horizontal, 0, vertical);
 
-        rig.velocity = (movement * speed / Time.deltaTime);
+        if (movement.magnitude > 1)
+            movement.Normalize();
+
+        rig.velocity = movement * speed;
+    }
+
+    void Shoot()
+    {
+        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
+        Rigidbody bulletRb = bullet.GetComponent<Rigidbody>();
+
+        Vector3 shootDirection = (LookPos - firePoint.position).normalized;
+        bulletRb.velocity = shootDirection * bulletSpeed;
     }
 }
