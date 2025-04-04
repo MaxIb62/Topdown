@@ -12,19 +12,37 @@ public class bullet : MonoBehaviour
     }
 
     // Update is called once per frame
-   void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Player")) return; 
-        Destroy(gameObject);
+    // void OnTriggerEnter(Collision other)
+    /* {
+         if (collision.gameObject.CompareTag("Player")) return; 
+         Destroy(gameObject);
 
-        if (collision.gameObject.CompareTag("Enemies"))
+         if (collision.gameObject.CompareTag("Enemies"))
+         {
+             Destroy(collision.gameObject); 
+             Destroy(gameObject); 
+         }
+         else
+         {
+             Destroy(gameObject); 
+         }
+     }*/
+
+    void OnTriggerEnter(Collider other)
+    {
         {
-            Destroy(collision.gameObject); 
-            Destroy(gameObject); 
-        }
-        else
-        {
-            Destroy(gameObject); 
+            if (other.gameObject.CompareTag("Player")) return;
+            Destroy(gameObject);
+
+            /*if (other.gameObject.CompareTag("Enemies"))
+            {
+                Destroy(other.gameObject);
+                Destroy(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }*/
         }
     }
 }
