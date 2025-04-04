@@ -15,6 +15,12 @@ public class Movement : MonoBehaviour
     void Start()
     {
         rig = GetComponent<Rigidbody>();
+
+        transform.position = new Vector3(0, 1, 0);
+
+        // Asegurar que el Rigidbody no tenga velocidad inicial
+        rig.velocity = Vector3.zero;
+        rig.angularVelocity = Vector3.zero;
     }
 
     void Update()

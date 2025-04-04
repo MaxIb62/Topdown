@@ -14,7 +14,17 @@ public class bullet : MonoBehaviour
     // Update is called once per frame
    void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Player")) return; // Evitar autodestrucción al tocar al jugador
+        if (collision.gameObject.CompareTag("Player")) return; 
         Destroy(gameObject);
+
+        if (collision.gameObject.CompareTag("Enemies"))
+        {
+            Destroy(collision.gameObject); 
+            Destroy(gameObject); 
+        }
+        else
+        {
+            Destroy(gameObject); 
+        }
     }
 }
