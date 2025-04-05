@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
+using UnityEngine   .UI;
+
 
 public class enemymovement : MonoBehaviour
 
@@ -16,10 +17,19 @@ public class enemymovement : MonoBehaviour
 
     public float MaxShield = 100f;
     public float shield;
+
+    public Slider healthSlider;   
+    public Slider shieldSlider;
     void Start()
     {
         health = HealthMax;
         shield = MaxShield;
+
+        if (healthSlider != null)
+            healthSlider.maxValue = HealthMax;
+
+        if (shieldSlider != null)
+            shieldSlider.maxValue = MaxShield;
     }
     void Update()
     {
@@ -29,6 +39,8 @@ public class enemymovement : MonoBehaviour
         {
             FollowTarget();
         }
+
+        UpdateUI();
     }
 
     void DetectPlayer()
@@ -88,6 +100,15 @@ public class enemymovement : MonoBehaviour
         }
     }
 
+    void UpdateUI()
+    {
+   
+        if (healthSlider != null)
+            healthSlider.value = health;
+
+        if (shieldSlider != null)
+            shieldSlider.value = shield;
+    }
 
     void OnDrawGizmos()
     {
