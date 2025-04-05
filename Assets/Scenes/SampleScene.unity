@@ -864,7 +864,7 @@ MonoBehaviour:
   SpawnPoint2: {fileID: 919338546}
   SpawnPoint3: {fileID: 1669561104}
   SpawnPoint4: {fileID: 1276051840}
-  timeBetweenWaves: 3
+  timeBetweenWaves: 20
 --- !u!4 &1311242155
 Transform:
   m_ObjectHideFlags: 0
