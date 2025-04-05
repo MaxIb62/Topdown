@@ -4,12 +4,23 @@ using UnityEngine;
 using UnityEngine.AI;
 
 public class enemymovement : MonoBehaviour
+
 {
-    public float detectionRadius = 10f; // Radio de detección
-    public float speed = 5f;            // Velocidad de movimiento
+    public float detectionRadius = 10f;
+    public float speed = 5f;
 
-    private Transform target;           // Jugador detectado
+    private Transform target;
 
+    public float HealthMax = 100f;
+    public float health;
+
+    public float MaxShield = 100f;
+    public float shield;
+    void Start()
+    {
+        health = HealthMax;
+        shield = MaxShield;
+    }
     void Update()
     {
         DetectPlayer();
@@ -33,7 +44,7 @@ public class enemymovement : MonoBehaviour
             }
         }
 
-        // Si no encuentra jugador en el rango
+
         target = null;
     }
 
@@ -44,7 +55,40 @@ public class enemymovement : MonoBehaviour
         transform.position += direction * speed * Time.deltaTime;
     }
 
-    // Visualiza el área de detección en la escena
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("bala"))
+        {
+            int damage = GameMan.instance.GetNumberDamage();
+            Damage(damage);
+            Destroy(other.gameObject);
+        }
+    }
+
+    void Damage(int amount)
+    {
+        if (shield > 0)
+        {
+            shield -= amount;
+            if (shield < 0)
+            {
+                // Si sobra daño después de que el escudo llega a 0, se aplica a la vida
+                health += shield; // shield es negativo aquí
+                shield = 0;
+            }
+        }
+        else
+        {
+            health -= amount;
+        }
+
+        if (health <= 0)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;

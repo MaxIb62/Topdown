@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Enemies
+  - bala
+  - shield
   layers:
   - Default
   - TransparentFX
@@ -13,7 +15,7 @@ TagManager:
   - Water
   - UI
   - Player
-  - 
+  - shield
   - 
   - 
   - 
