@@ -29,7 +29,7 @@ public class Shield : MonoBehaviour
                 shield += regSpeed * Time.deltaTime;
                 shield = Mathf.Min(shield, MaxShield);
 
-                // Si ya se regeneró, activar el collider
+                
                 if (shield > 0f && ShieldCol != null)
                 {
                     Collider colSH = ShieldCol.GetComponent<Collider>();
@@ -54,9 +54,9 @@ public class Shield : MonoBehaviour
     public void DamageShield(int amount)
     {
         shield -= amount;
-        shield = Mathf.Max(shield, 0); // Evita valores negativos
+        shield = Mathf.Max(shield, 0); 
 
-        // Reiniciar contador de regeneración
+        
         timeSinceLastHit = 0f;
 
         if (shield <= 0)

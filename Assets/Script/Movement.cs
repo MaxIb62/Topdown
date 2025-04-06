@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Movement : MonoBehaviour
 {
@@ -8,9 +9,23 @@ public class Movement : MonoBehaviour
     public float speed = 4;
     Vector3 LookPos;
 
-    public GameObject bulletPrefab; // Prefab de la bala
-    public Transform firePoint; // Punto de origen del disparo
+    public GameObject bulletPrefab; 
+    public Transform firePoint; 
     public float bulletSpeed = 10f;
+
+    public GameObject missilPref;
+    public float missileSpeed = 30f;
+
+    public float maxHealth = 100f;
+    public float maxShield = 100f;
+    public float health;
+    public float shield;
+
+    public Slider healthSlider;
+    public Slider shieldSlider;
+
+    public GameObject GameOverpanel;
+
 
     void Start()
     {
@@ -18,9 +33,18 @@ public class Movement : MonoBehaviour
 
         transform.position = new Vector3(0, 1, 0);
 
-        // Asegurar que el Rigidbody no tenga velocidad inicial
+        
         rig.velocity = Vector3.zero;
         rig.angularVelocity = Vector3.zero;
+
+        health = maxHealth;
+        shield = maxShield;
+
+        if (healthSlider != null)
+            healthSlider.maxValue = maxHealth;
+
+        if (shieldSlider != null)
+            shieldSlider.maxValue = maxShield;
     }
 
     void Update()
@@ -41,11 +65,24 @@ public class Movement : MonoBehaviour
             transform.LookAt(transform.position + LookDir, Vector3.up);
         }
 
-        // Disparar con click izquierdo
+        
         if (Input.GetMouseButtonDown(0))
         {
             Shoot();
         }
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            ShootMissile();
+        }
+
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            
+            Coin.instance.TryBuyHealth(10, 30f, this);
+        }
+
+        UpdateUI();
     }
 
     void FixedUpdate()
@@ -68,5 +105,68 @@ public class Movement : MonoBehaviour
 
         Vector3 shootDirection = (LookPos - firePoint.position).normalized;
         bulletRb.velocity = shootDirection * bulletSpeed;
+    }
+
+    void ShootMissile()
+    {
+        GameObject missil = Instantiate(missilPref, firePoint.position, Quaternion.identity);
+        Rigidbody missilRb = missil.GetComponent<Rigidbody>();
+
+        Vector3 shootDirection = (LookPos - firePoint.position).normalized;
+        missilRb.velocity = shootDirection * missileSpeed;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other. CompareTag ("bulletEnemy"))
+        {
+            int damage = 10;
+            DamagePlayer(damage);
+            Destroy(other.gameObject);
+        }
+    }
+
+    void DamagePlayer(int amount)
+    {
+        if (shield > 0)
+        {
+            shield -= amount;
+            if (shield < 0)
+            {
+                health += shield;
+                shield = 0;
+            }
+        }
+        else
+        {
+            health -= amount;
+        }
+
+        if (health <= 0)
+        {
+            Destroy(gameObject);
+            if (GameOverpanel != null)
+                GameOverpanel.SetActive(true);
+
+            Time.timeScale = 0f;
+            
+        }
+    }
+
+    public void Heal(float amount)
+    {
+        health += amount;
+        if (health > maxHealth)
+            health = maxHealth;
+    }
+
+    void UpdateUI()
+    {
+
+        if (healthSlider != null)
+            healthSlider.value = health;
+
+        if (shieldSlider != null)
+            shieldSlider.value = shield;
     }
 }

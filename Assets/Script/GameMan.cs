@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class GameMan : MonoBehaviour
 {
-    public GameObject playerPrefab; 
-    public Transform spawnPoint;
+    //public GameObject playerPrefab; 
+    //public Transform spawnPoint;
 
     public static GameMan instance;
 
@@ -16,10 +16,10 @@ public class GameMan : MonoBehaviour
 
     void Start()
     {
-        if (playerPrefab != null && spawnPoint != null)
+        /*if (playerPrefab != null && spawnPoint != null)
         {
             Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
-        }
+        }*/
     }
 
     void Awake()

@@ -1,13 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine   .UI;
+using UnityEngine.UI;
 
 
 public class enemymovement : MonoBehaviour
-
 {
-    public float detectionRadius = 10f;
+    public float FollowRad = 10f;
     public float speed = 5f;
 
     private Transform target;
@@ -18,8 +17,21 @@ public class enemymovement : MonoBehaviour
     public float MaxShield = 100f;
     public float shield;
 
-    public Slider healthSlider;   
+    public Slider healthSlider;
     public Slider shieldSlider;
+
+    public GameObject coinPref;
+    [Range(0f, 1f)]
+    public float posibilityDrop = 0.2f;
+
+    public GameObject bulletEnemy;
+    public Transform FirePoint;
+    public float bulletSpeed = 10f;
+    public float shootInterval = 1.5f;
+
+    private float ShootTimer = 0f;
+
+
     void Start()
     {
         health = HealthMax;
@@ -40,12 +52,38 @@ public class enemymovement : MonoBehaviour
             FollowTarget();
         }
 
+        if (target != null)
+        {
+            FollowTarget();
+
+            ShootTimer += Time.deltaTime;
+            if(ShootTimer >= shootInterval)
+            {
+                shootPlayer();
+                ShootTimer = 0f;
+            }
+        }
+
         UpdateUI();
+    }
+
+    void shootPlayer()
+    {
+        if (bulletEnemy != null && FirePoint != null && target != null)
+        {
+            GameObject bulletEnem = Instantiate(bulletEnemy, FirePoint.position, Quaternion.identity);
+            Rigidbody RB = bulletEnem.GetComponent<Rigidbody>();
+
+            Vector3 shootDir = (target.position - FirePoint.position).normalized;
+            RB.velocity = shootDir * bulletSpeed;
+
+            bulletEnem.transform.forward = shootDir;
+        }
     }
 
     void DetectPlayer()
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, detectionRadius);
+        Collider[] colliders = Physics.OverlapSphere(transform.position, FollowRad);
 
         foreach (Collider col in colliders)
         {
@@ -63,7 +101,7 @@ public class enemymovement : MonoBehaviour
     void FollowTarget()
     {
         Vector3 direction = (target.position - transform.position).normalized;
-        direction.y = 0; // Evita movimiento vertical
+        direction.y = 0; 
         transform.position += direction * speed * Time.deltaTime;
     }
 
@@ -77,15 +115,14 @@ public class enemymovement : MonoBehaviour
         }
     }
 
-    void Damage(int amount)
+    public void Damage(int amount)
     {
         if (shield > 0)
         {
             shield -= amount;
             if (shield < 0)
-            {
-                // Si sobra daño después de que el escudo llega a 0, se aplica a la vida
-                health += shield; // shield es negativo aquí
+            { 
+                health += shield; 
                 shield = 0;
             }
         }
@@ -96,7 +133,17 @@ public class enemymovement : MonoBehaviour
 
         if (health <= 0)
         {
+            DropCoin();
             Destroy(gameObject);
+        }
+    }
+
+    void DropCoin()
+    {
+        float randm = Random.value;
+        if (randm <= posibilityDrop && coinPref !=null)
+        {
+            Instantiate(coinPref, transform.position + Vector3.up * 0.5f, Quaternion.identity);
         }
     }
 
@@ -113,6 +160,6 @@ public class enemymovement : MonoBehaviour
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, detectionRadius);
+        Gizmos.DrawWireSphere(transform.position, FollowRad);
     }
 }
